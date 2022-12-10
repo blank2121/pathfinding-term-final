@@ -1,9 +1,10 @@
 from PIL import Image
+from numba import jit
 
 class ImageData:
     def __init__(self, path):
         self.image = Image.open(path)
-        self.pixels = list(self.image.getdata())
+        self.pixels = self.image.load()
     
     def imageSize(self) -> tuple:
         """returns the pixel dimentions of the image"""
@@ -11,36 +12,20 @@ class ImageData:
     
     def pixel(self, x, y):
         "returns the pixel data of a given location via x and y coords"
-        return self.pixels[self.image.size[0]*y+x]
+        return self.pixels[x, y]
     
     def writePixel(self, x, y, rgb):
         """changes the color of the pixel at the inputted location and to the inputted color"""
-        self.pixels[self.image.size[0]*y+x] = rgb
+        self.pixels[x, y] = rgb
     
     def saveAll(self, newName) -> None:
         """saves the new modified image as a png in the working directory"""
-        img = Image.new('RGB', self.imageSize(), "black")
-        pixel = img.load()
         
         
         # rowCounter will act as tge row number so it is like the y-axis value
-        rowCounter = -1
-        columCounter = 0
-        
-        for i, pix in enumerate(self.pixels):
-            if i%self.imageSize()[0] == 0:
-                rowCounter+=1
-            
-            if i%self.imageSize()[1] == 0:
-                columCounter = 0
-            
-            pixel[columCounter, rowCounter] = pix 
-            
-            columCounter+=1
-            
-        
-        img.save(newName)
+        self.image.save(newName)
     
+    @jit
     def zeroOneMatrix(self):
         matrix = []
         
@@ -76,7 +61,7 @@ class ImageData:
         return matrix
         
     
-def main():
+def __main():
 
     myImage = ImageData("./test-images/IMG_3625.jpg")
     print(myImage.imageSize())
@@ -90,4 +75,4 @@ def main():
     # print(counter)
 
 if __name__ == "__main__":
-    main()
+    __main()
