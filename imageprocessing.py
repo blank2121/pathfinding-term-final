@@ -32,6 +32,9 @@ class ImageData:
         # the threshhold is half the sum of the rgb values
         threshHold = (255*3)/2
         
+        #if the pixel is larger than the threshhold num, it is considered black
+        # else, it is a white pixel
+        
         for i in range(self.imageSize()[1]):
             matrix.append([])
             
